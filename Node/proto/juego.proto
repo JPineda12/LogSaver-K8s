@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.demo";
+option java_outer_classname = "JuegoProto";
+option objc_class_prefix = "HLW";
+
+package juego;
+
+service Juegos {
+  rpc AddLog (JuegoRequest) returns (RequestReply) {}
+  rpc getLogs (Empty) returns (stream JuegoReply) {}
+}
+
+message JuegoRequest {
+  int32 game_id = 1;
+  int32 players = 2;
+  string game_name = 3;
+  string winner_number = 4;
+  string queue = 5;
+}
+
+message RequestReply {
+  string message = 1;
+}
+
+message Empty {}
+
+message JuegoReply {
+  int32 game_id = 1;
+  int32 players = 2;
+  string game_name = 3;
+  string winner_number = 4;
+  string queue = 5;
+}

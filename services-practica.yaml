@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: practica2-201404405
+spec: {}
+status: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: app-kafka
+  name: app-kafka
+  namespace: practica2-201404405
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-kafka
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: app-kafka
+
+    spec:
+      containers:
+        - image: jpinedae/api_server_201404405
+          name: server-grpc-kafka
+          ports:
+            - containerPort: 50051
+        - image: jpinedae/api_client_grpc_201404405
+          name: client-grpc-kafka
+          ports:
+            - containerPort: 3000
+          resources: {}
+
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: app-kafka
+  name: app-kafka
+  namespace: practica2-201404405
+spec:
+  type: NodePort
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: 3000
+  selector:
+    app: app-kafka
+
+status:
+  loadBalancer: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: worker-kafka
+  name: worker-kafka
+  namespace: practica2-201404405
+spec:
+  selector:
+    matchLabels:
+      app: worker-kafka
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: worker-kafka
+    spec:
+      containers:
+        - image: jpinedae/kafka_sub_201404405
+          name: worker-kafka
+status: {}
