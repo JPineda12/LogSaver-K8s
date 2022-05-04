@@ -33,6 +33,14 @@ type GameResult struct {
 	Game_name     string `json:"game_name"`
 	Winner_number int64  `json:"winner_number"`
 }
+type GameInfo struct {
+	Game_id        int64  `json:"game_id"`
+	Players        int64  `json:"players"`
+	Game_name      string `json:"game_name"`
+	Winner_number  int64  `json:"winner_number"`
+	Queue          string `json:"queue"`
+	Request_Number int64  `json:"request_number"`
+}
 
 func failOnError(err error, msg string) {
 	if err != nil {
@@ -40,9 +48,9 @@ func failOnError(err error, msg string) {
 	}
 }
 
-var MONGO = "mongodb://mongoadmin:hola123@34.66.127.53/Fase2Sopes1?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&ssl=false"
+var MONGO = "mongodb://mongoadmin:hola123@34.136.79.58/Fase2Sopes1?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&ssl=false"
 
-var topic = "my-topic"
+var topic = "logs"
 var broker1Address = "my-cluster-kafka-bootstrap.kafka"
 
 func main() {
@@ -58,7 +66,7 @@ func main() {
 		panic(err)
 	}
 
-	c.SubscribeTopics([]string{"my-topic"}, nil)
+	c.SubscribeTopics([]string{"logs"}, nil)
 
 	for {
 		msg, err := c.ReadMessage(-1)
@@ -80,18 +88,20 @@ func main() {
 
 func sendToMongo(game_info string) {
 	client, _ := mongo.NewClient(options.Client().ApplyURI(MONGO))
-	var logGame interface{}
-	err := bson.UnmarshalExtJSON([]byte(game_info), true, &logGame)
-	if err != nil {
-		log.Fatal(err)
-	}
+	logGame := GameInfo{}
+	json.Unmarshal([]byte(game_info), &logGame)
+	fmt.Println("LOG interface: ", logGame)
+
 	collection := client.Database("Fase2Sopes1").Collection("log")
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	err = client.Connect(ctx)
+	err := client.Connect(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer client.Disconnect(ctx)
+	//COUNT
+	count, _ := collection.CountDocuments(ctx, bson.M{}, nil)
+	logGame.Request_Number = count + 1
 	res, insertErr := collection.InsertOne(ctx, logGame)
 	if insertErr != nil {
 		log.Fatal(insertErr)
@@ -115,9 +125,9 @@ func sendToTiDB(game_info string) {
 
 	fmt.Println("LOG interface: ", logGame)
 	result, err := postClient.DB.Exec(`
-			INSERT INTO Resultado (game_id, game_name, winner)
-			VALUES (?, ?, ?)
-		`,
+                        INSERT INTO Resultado (game_id, game_name, winner)
+                        VALUES (?, ?, ?)
+                `,
 		logGame.Game_id, logGame.Game_name, logGame.Winner_number)
 	if err != nil {
 		log.Println(err)

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Namespace
 metadata:
   creationTimestamp: null
-  name: practica2-201404405
+  name: prueba
 spec: {}
 status: {}
 ---
@@ -13,7 +13,7 @@ metadata:
   labels:
     app: app-kafka
   name: app-kafka
-  namespace: practica2-201404405
+  namespace: prueba
 spec:
   replicas: 1
   selector:
@@ -47,12 +47,11 @@ metadata:
   labels:
     app: app-kafka
   name: app-kafka
-  namespace: practica2-201404405
+  namespace: prueba
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
     - port: 3000
-      protocol: TCP
       targetPort: 3000
   selector:
     app: app-kafka
@@ -67,7 +66,7 @@ metadata:
   labels:
     app: worker-kafka
   name: worker-kafka
-  namespace: practica2-201404405
+  namespace: prueba
 spec:
   selector:
     matchLabels:

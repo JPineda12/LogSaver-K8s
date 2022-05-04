@@ -26,7 +26,7 @@ type GameResult struct {
 	Queue         string `json:"queue"`
 }
 
-var topic = "my-topic"
+var topic = "logs"
 var broker1Address = "my-cluster-kafka-bootstrap.kafka"
 
 func (s *server) AddLog(ctx context.Context, in *pb.JuegoRequest) (*pb.RequestReply, error) {
