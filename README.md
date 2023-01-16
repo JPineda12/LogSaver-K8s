@@ -16,5 +16,11 @@
 |------------------------------------|-----------|
 | Juan Antonio Pineda Espino              | 201404405 |
 
+
+### Built With
+* Database: [MongoDB](https://www.mongodb.com)
+* Deployment: [Kubernetes](https://cloud.google.com/kubernetes-engine)
+* Cloud: [Google Cloud](https://console.cloud.google.com)
+
 - ### [Manual Tecnico](Manual_Tecnico.md)
 - ### [Manual de Usuario](Manual_Usuario.md)
